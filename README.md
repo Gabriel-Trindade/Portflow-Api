@@ -1,59 +1,158 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+﻿# PortFlow Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+PortFlow is a modular backend for a Port Operations Management Platform.
+This repository focuses on architecture quality, domain rules, and API reliability for a decoupled SPA + API product.
 
-## About Laravel
+## Why this project exists
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project is a portfolio case to demonstrate:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Modular monolith design (`Delivery by Feature`)
+- Domain-driven organization (Domain, Application, Infrastructure, Http)
+- Clean architecture and SOLID-oriented code
+- Explicit use cases through action classes
+- Testable business rules with unit and feature coverage
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Architecture at a glance
 
-## Learning Laravel
+PortFlow uses a decoupled architecture:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Frontend: Vue 3 SPA (separate app)
+- Backend: Laravel 12 REST API
+- Authentication: Laravel Sanctum
+- Data and platform targets: PostgreSQL, Redis, S3
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Module layout
 
-## Laravel Sponsors
+```text
+app/Modules/
+  Users/
+  Containers/
+  Ships/        (planned)
+  Berths/       (planned)
+  Operations/   (planned)
+  Billing/      (planned)
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Each module is split into:
 
-### Premium Partners
+- `Domain` for entities, rules, invariants
+- `Application` for use cases/actions
+- `Infrastructure` for persistence and integrations
+- `Http` for controllers, requests, resources
+- `Routes` for module endpoints
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Implemented modules
 
-## Contributing
+### Users
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Register and login
+- Logout with Sanctum
+- Profile read/update
+- Password change
+- Role-based access control
+- Admin user management (list, show, assign role, deactivate)
 
-## Code of Conduct
+### Containers
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Create/list/get/update containers
+- Container status changes
+- Domain-level status transition validation
+- Container type and status modeled via enums
 
-## Security Vulnerabilities
+## API overview
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Public
 
-## License
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Authenticated (`auth:sanctum`)
+
+- `POST /api/auth/logout`
+- `GET /api/users/me`
+- `PUT /api/users/me`
+- `PUT /api/users/me/password`
+- `GET /api/containers`
+- `POST /api/containers`
+- `GET /api/containers/{id}`
+- `PUT /api/containers/{id}`
+- `PATCH /api/containers/{id}/status`
+
+### Admin only
+
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `PUT /api/users/{id}/role`
+- `DELETE /api/users/{id}`
+
+## Tech stack
+
+- PHP 8.2+
+- Laravel 12
+- Laravel Sanctum
+- Pest + PHPUnit
+- Vite tooling
+
+## Local setup
+
+### Requirements
+
+- PHP 8.2+
+- Composer
+- Node.js + npm
+- SQLite (fast local/testing) or PostgreSQL
+
+### Installation
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install
+```
+
+### Run in development
+
+```bash
+composer run dev
+```
+
+That command starts:
+
+- API server
+- Queue listener
+- Vite dev server
+
+## Testing
+
+Run all tests:
+
+```bash
+composer test
+```
+
+Current coverage includes:
+
+- Authentication and user management flows
+- Container API behavior
+- Container state machine/domain transition rules
+
+Testing is configured with in-memory SQLite in `phpunit.xml`.
+
+## Roadmap
+
+- Ships and berths modules
+- Port operations events and history timeline
+- Billing rules (storage, demurrage, reefer energy)
+- Dashboard KPIs
+- AWS deployment documentation
+
+## Related documentation
+
+- `PortFlow-Architecture.md` for full architecture and phased delivery plan
+
+---
+
+PortFlow is built as a realistic backend engineering case study for logistics systems.
