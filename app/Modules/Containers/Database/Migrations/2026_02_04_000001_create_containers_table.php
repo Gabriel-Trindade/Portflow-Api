@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Modules\Containers\Domain\Enums\ContainerStatus;
 use App\Modules\Containers\Domain\Enums\ContainerType;

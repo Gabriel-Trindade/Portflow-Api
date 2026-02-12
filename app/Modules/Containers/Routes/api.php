@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Modules\Containers\Http\Controllers\ContainerController;
 use Illuminate\Support\Facades\Route;
